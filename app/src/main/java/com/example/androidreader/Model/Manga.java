@@ -1,8 +1,10 @@
-package com.example.androidreader;
+package com.example.androidreader.Model;
 
 import android.graphics.Bitmap;
 
-public class Manga {
+import java.io.Serializable;
+
+public class Manga implements Serializable {
     private String Title;
     private String CoverURL;
     private String LinkURL;

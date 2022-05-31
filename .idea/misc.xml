@@ -6,6 +6,18 @@
         <entry key="..\:/Code/Android studio/app/src/main/res/drawable/ic_launcher_background.xml" value="0.236" />
         <entry key="..\:/Code/Android studio/app/src/main/res/layout/activity_main.xml" value="0.24547101449275363" />
         <entry key="..\:/Code/Android studio/app/src/main/res/layout/cardview_manga.xml" value="0.176" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.128" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.1" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/drawable/ic_baseline_history_24.xml" value="0.1" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/drawable/toggle_selector.xml" value="0.1" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/layout/activity_detail_manga.xml" value="0.2" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/layout/activity_main.xml" value="0.152" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/layout/cardview_manga.xml" value="0.11302083333333333" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_favorite.xml" value="0.24547101449275363" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_history.xml" value="0.24547101449275363" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_home.xml" value="0.176" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
       </map>
     </option>
   </component>
