@@ -45,8 +45,8 @@
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textOn=""
                 android:textOff=""
+                android:textOn=""
                 android:background="@drawable/toggle_selector"
                 android:onClick="onCustomToggleClick"
                 android:visibility="gone"/>
@@ -88,9 +88,43 @@
                     android:text="Description"
                     />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/chapter_LL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="4"
+                android:padding="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Chapters"
+                    android:layout_weight="1"/>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:background="@drawable/horizontal_line"
+                    />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:id="@+id/recycler_chapter"
+                android:layout_height="match_parent"
 
+                >
 
+            </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
+
+
+
+
     </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

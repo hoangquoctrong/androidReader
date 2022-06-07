@@ -1,9 +1,10 @@
-package com.example.androidreader;
+package com.example.androidreader.Fragment;
 
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 import com.example.androidreader.Activity.MainActivity;
 import com.example.androidreader.Apdapter.HomeRecyclerViewAdapter;
 import com.example.androidreader.Model.Manga;
+import com.example.androidreader.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,6 +36,7 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     ProgressBar progressIndicator;
 
+    int page = 2;
     List<Manga> mangas = new ArrayList<>();
     public HomeFragment() {
         // Required empty public constructor
@@ -53,11 +56,16 @@ public class HomeFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_id);
         progressIndicator = (ProgressBar) view.findViewById(R.id.progress_circular);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (! recyclerView.canScrollVertically(1)){ //1 for down
+                    new RetrieveData().execute();
+                }
+            }
+        });
         new RetrieveData().execute();
-        HomeRecyclerViewAdapter myAdapter = new HomeRecyclerViewAdapter(getActivity(),mangas);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
-        recyclerView.setAdapter(myAdapter);
-
         // Inflate the layout for this fragment
         return view;
 
@@ -72,18 +80,33 @@ public class HomeFragment extends Fragment {
         for (Element data : datas)
         {
             Element imgData = data.getElementsByTag("img").get(0);
-            imgData.toString();
             if(imgData.attr("src").isEmpty())
             {
                 mangas.add(new Manga(data.attr("title"),imgData.attr("data-src"),data.attr("href")));
-
             }
             else
             {
                 mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
             }
         }
+    }
 
+    void LoadMore() throws IOException {
+        page++;
+        Document doc = Jsoup.connect("https://saytruyen.net/?page=" + page).userAgent("Mozilla").get();
+        Elements datas = doc.select("div.manga-content > div.row.px-2.list-item > div > div.page-item-detail > div.item-thumb.hover-details.c-image-hover > a ");
+        for (Element data : datas)
+        {
+            Element imgData = data.getElementsByTag("img").get(0);
+            if(imgData.attr("src").isEmpty())
+            {
+                mangas.add(new Manga(data.attr("title"),imgData.attr("data-src"),data.attr("href")));
+            }
+            else
+            {
+                mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
+            }
+        }
     }
 
     class RetrieveData extends AsyncTask<Void, Void, Void> {
@@ -92,8 +115,10 @@ public class HomeFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-
-                ScarperHome();
+                if(mangas.isEmpty())
+                    ScarperHome();
+                else
+                    LoadMore();
 
             } catch (IOException e) {
                 e.printStackTrace();

@@ -3,6 +3,8 @@ package com.example.androidreader.Activity;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,14 +12,18 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
+import com.example.androidreader.Apdapter.ChapterRecyclerViewAdapter;
+import com.example.androidreader.Apdapter.HomeRecyclerViewAdapter;
 import com.example.androidreader.Model.Manga;
 import com.example.androidreader.Model.MangaChapter;
 import com.example.androidreader.Model.MangaDetail;
@@ -30,17 +36,23 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DetailManga extends AppCompatActivity {
 
     TextView titleTV, categoryTV,descriptionTV, authorTV;
     ImageView thumbnailIV;
-    LinearLayout descriptionLL;
+    LinearLayout descriptionLL,chapterLL;
     ProgressBar progressBar;
     ToggleButton favoriteBtn;
+    RecyclerView chapterRecyclerView;
+    ListView chapterLV;
     Manga manga;
     MangaDetail mangaDetail;
+
+    List<MangaChapter> mangaChapters= new ArrayList<>();
 
 
 
@@ -58,7 +70,9 @@ public class DetailManga extends AppCompatActivity {
         authorTV = (TextView) findViewById(R.id.detail_author_TV);
         progressBar = (ProgressBar) findViewById(R.id.detail_progress);
         descriptionLL = (LinearLayout) findViewById(R.id.description_LL);
+        chapterLL = (LinearLayout) findViewById(R.id.chapter_LL);
         favoriteBtn = (ToggleButton) findViewById(R.id.favorite_button);
+        chapterRecyclerView = (RecyclerView) findViewById(R.id.recycler_chapter);
 
         titleTV.setText(manga.getTitle());
 
@@ -75,29 +89,20 @@ public class DetailManga extends AppCompatActivity {
         Elements description = doc.select("div.description-summary > div.summary__content.show-more");
         Elements chapterList = doc.select("ul.list-item.box-list-chapter.limit-height > li.wp-manga-chapter > a");
 
-        System.out.println(description.html());
-        Element e= details.get(5);
 
-        List<MangaChapter> mangaChapters= new ArrayList<>();
+        int i = 0;
         for (Element chapter : chapterList)
         {
-//            System.out.println(chapter.attr("title"));
-//            System.out.println(chapter.attr("href"));
-            mangaChapters.add(new MangaChapter(chapter.attr("title"),chapter.attr("href")));
+            mangaChapters.add(new MangaChapter(chapter.text(),chapter.attr("href"),i));
+            i++;
         }
 
-        for(int i = 0 ; i< mangaChapters.size();i++)
-        {
-            System.out.println(mangaChapters.get(i).getChapterName());
-        }
+        Collections.sort(mangaChapters);
 
         mangaDetail = new MangaDetail(
                 manga.getTitle(),manga.getCoverURL(),
                 manga.getLinkURL(), description.get(0).text(),
                 details.get(5).text().replaceAll(" ", " - ") , mangaChapters,details.get(2).text());
-
-
-
     }
 
     public void onCustomToggleClick(View view) {
@@ -133,7 +138,20 @@ public class DetailManga extends AppCompatActivity {
             categoryTV.setText("Thể loại: " + mangaDetail.getCategory());
             authorTV.setText("Tác giả: " + mangaDetail.getArtist());
 
+            System.out.println("chapters: " + mangaChapters.toString());
+
+
+
+            ChapterRecyclerViewAdapter chapterAdapter = new ChapterRecyclerViewAdapter(getApplicationContext(),mangaChapters);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            chapterRecyclerView.setLayoutManager(mLayoutManager);
+            chapterRecyclerView.setAdapter(chapterAdapter);
+            chapterRecyclerView.setNestedScrollingEnabled(false);
+
+
             progressBar.setVisibility(View.GONE);
+            chapterRecyclerView.setVisibility(View.VISIBLE);
+            chapterLL.setVisibility(View.VISIBLE);
             titleTV.setVisibility(View.VISIBLE);
             descriptionLL.setVisibility(View.VISIBLE);
             categoryTV.setVisibility(View.VISIBLE);

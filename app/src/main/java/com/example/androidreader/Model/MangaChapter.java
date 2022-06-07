@@ -1,13 +1,17 @@
 package com.example.androidreader.Model;
 
-public class MangaChapter {
-    private String chapterName;
-    private String chapterURL;
+import java.io.Serializable;
+
+public class MangaChapter implements Serializable,Comparable<MangaChapter> {
+    public String chapterName;
+    public String chapterURL;
+    public int chapterID;
     MangaChapter(){}
 
-    public MangaChapter(String chapterName, String chapterURL) {
+    public MangaChapter(String chapterName, String chapterURL, int chapterID) {
         this.chapterName = chapterName;
         this.chapterURL = chapterURL;
+        this.chapterID = chapterID;
     }
 
     public String getChapterName() {
@@ -24,5 +28,18 @@ public class MangaChapter {
 
     public void setChapterURL(String chapterURL) {
         this.chapterURL = chapterURL;
+    }
+
+    public int getChapterID() {
+        return chapterID;
+    }
+
+    public void setChapterID(int chapterID) {
+        this.chapterID = chapterID;
+    }
+
+    @Override
+    public int compareTo(MangaChapter mangaChapter) {
+        return mangaChapter.chapterID - this.chapterID ;
     }
 }

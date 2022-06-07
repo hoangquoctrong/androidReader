@@ -20,8 +20,8 @@ import android.widget.ProgressBar;
 
 import com.example.androidreader.Apdapter.HomeRecyclerViewAdapter;
 import com.example.androidreader.FavoriteFragment;
+import com.example.androidreader.Fragment.HomeFragment;
 import com.example.androidreader.HistoryFragment;
-import com.example.androidreader.HomeFragment;
 import com.example.androidreader.Model.Manga;
 import com.example.androidreader.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
