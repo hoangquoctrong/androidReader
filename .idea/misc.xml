@@ -22,9 +22,10 @@
         <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_content.xml" value="0.11302083333333333" />
         <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_favorite.xml" value="0.24547101449275363" />
         <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_history.xml" value="0.24547101449275363" />
-        <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_home.xml" value="0.176" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/layout/fragment_home.xml" value="0.136" />
         <entry key="..\:/Code/androidReader/app/src/main/res/layout/view_content.xml" value="0.11302083333333333" />
         <entry key="..\:/Code/androidReader/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/androidReader/app/src/main/res/menu/drawer_item.xml" value="0.11302083333333333" />
       </map>
     </option>
   </component>

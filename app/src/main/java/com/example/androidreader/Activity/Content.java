@@ -97,7 +97,7 @@ public class Content extends AppCompatActivity {
         Document doc = null;
             doc = Jsoup.connect(mangaChapterList.get(position).getChapterURL()).userAgent("Mozilla").get();
 
-        Elements datas = doc.select("div.reading-content > div.page-break > img");
+        Elements datas = doc.select("div.page-chapter > img");
         for (Element data : datas)
         {
             Element imgData = data.getElementsByTag("img").get(0);

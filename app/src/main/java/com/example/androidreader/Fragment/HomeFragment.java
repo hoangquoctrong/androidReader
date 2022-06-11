@@ -74,20 +74,20 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     void ScarperHome() throws IOException {
 
-        Document doc = Jsoup.connect("https://saytruyen.net/").userAgent("Mozilla").get();
+        Document doc = Jsoup.connect("https://truyentranh.net/").userAgent("Mozilla").get();
         ArrayList<String> mangaList = new ArrayList<>();
-        Elements datas = doc.select("div.manga-content > div.row.px-2.list-item > div > div.page-item-detail > div.item-thumb.hover-details.c-image-hover > a ");
+        Elements datas = doc.select("div.content > div.box > div.card-list > div.card > a");
         for (Element data : datas)
         {
+            System.out.println(data);
+//            Element divData = data.getElementsByTag("div").get(0);
+//            System.out.println(divData.html());
             Element imgData = data.getElementsByTag("img").get(0);
-            if(imgData.attr("src").isEmpty())
-            {
-                mangas.add(new Manga(data.attr("title"),imgData.attr("data-src"),data.attr("href")));
-            }
-            else
-            {
-                mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
-            }
+            System.out.println(imgData.html());
+
+            mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
+            System.out.println(imgData.attr("src"));
+
         }
     }
 

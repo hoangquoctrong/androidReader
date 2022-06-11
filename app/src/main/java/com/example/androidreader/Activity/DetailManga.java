@@ -85,9 +85,9 @@ public class DetailManga extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     void ScarperHome() throws IOException {
         Document doc = Jsoup.connect(manga.getLinkURL()).userAgent("Mozilla").get();
-        Elements details = doc.select("div.post-content > div.post-content_item > div.summary-content");
-        Elements description = doc.select("div.description-summary > div.summary__content.show-more");
-        Elements chapterList = doc.select("ul.list-item.box-list-chapter.limit-height > li.wp-manga-chapter > a");
+        Elements details = doc.select("div.detail-banner-info > ul > li");
+        Elements description = doc.select("div.detail-manga-intro");
+        Elements chapterList = doc.select("div.chapter-list-item-box > div.chapter-select > a");
 
 
         int i = 0;
@@ -97,12 +97,13 @@ public class DetailManga extends AppCompatActivity {
             i++;
         }
 
+
         Collections.sort(mangaChapters);
 
         mangaDetail = new MangaDetail(
                 manga.getTitle(),manga.getCoverURL(),
                 manga.getLinkURL(), description.get(0).text(),
-                details.get(5).text().replaceAll(" ", " - ") , mangaChapters,details.get(2).text());
+                details.get(0).text().replaceAll(" ", " - "), mangaChapters,details.get(2).child(1).text());
     }
 
     public void onCustomToggleClick(View view) {

@@ -14,6 +14,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.example.androidreader.Activity.DetailManga;
 import com.example.androidreader.Model.Manga;
 import com.example.androidreader.R;
@@ -45,7 +47,10 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tv_title.setText(mangas.get(position).getTitle());
-        Glide.with(mContext).load(mangas.get(position).getCoverURL()).into(holder.manga_thumbnail);
+        GlideUrl glideUrl = new GlideUrl(mangas.get(position).getCoverURL(), new LazyHeaders.Builder()
+                .addHeader("User-Agent", "Mozilla")
+                .build());
+        Glide.with(mContext).load(glideUrl).into(holder.manga_thumbnail);
 
         holder.manga_card.setOnClickListener(new View.OnClickListener() {
             @Override

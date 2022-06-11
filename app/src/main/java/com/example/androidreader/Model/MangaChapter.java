@@ -40,6 +40,6 @@ public class MangaChapter implements Serializable,Comparable<MangaChapter> {
 
     @Override
     public int compareTo(MangaChapter mangaChapter) {
-        return mangaChapter.chapterID - this.chapterID ;
+        return this.chapterID - mangaChapter.chapterID ;
     }
 }
