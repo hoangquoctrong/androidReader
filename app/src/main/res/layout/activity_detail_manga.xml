@@ -1,130 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.DetailManga">
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:padding="10dp">
-        <LinearLayout
+        android:layout_height="match_parent">
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center">
-            <ImageView
-                android:layout_width="125dp"
-                android:layout_height="170dp"
-                android:layout_gravity="center"
-                android:background="@color/primaryColor"
-                android:id="@+id/detail_image_view"
-                android:scaleType="centerCrop"
-                />
-            <TextView
-                android:id="@+id/detail_title_TV"
-                android:layout_width="wrap_content"
-                android:textAlignment="center"
-                android:layout_height="wrap_content"
-                android:text="Testing"
-                android:layout_marginTop="10dp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                />
-
-            <ProgressBar
-                android:id="@+id/detail_progress"
+            android:padding="10dp">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="visible"
-                android:textAlignment="center"/>
-            <ToggleButton
-                android:id="@+id/favorite_button"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textOff=""
-                android:textOn=""
-                android:background="@drawable/toggle_selector"
-                android:onClick="onCustomToggleClick"
-                android:visibility="gone"/>
-            <TextView
-                android:id="@+id/detail_category_TV"
-                android:textAlignment="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:layout_marginTop="10dp"
-                android:visibility="invisible"/>
-            <TextView
-                android:id="@+id/detail_author_TV"
-                android:textAlignment="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"/>
-            <LinearLayout
-                android:id="@+id/description_LL"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp"
-                android:layout_marginTop="10dp"
-                android:visibility="invisible">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:text="Mô tả" />
-                <TextView
-                    android:id="@+id/detail_description_TV"
-                    android:paddingTop="10dp"
-                    android:textAlignment="viewStart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:text="Description"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="125dp"
+                    android:layout_height="170dp"
+                    android:layout_gravity="center"
+                    android:background="@color/primaryColor"
+                    android:id="@+id/detail_image_view"
+                    android:scaleType="centerCrop"
                     />
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/chapter_LL"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="4"
-                android:padding="8dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                >
                 <TextView
+                    android:id="@+id/detail_title_TV"
+                    android:layout_width="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_height="wrap_content"
+                    android:text="Testing"
+                    android:layout_marginTop="10dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    />
+
+                <ProgressBar
+                    android:id="@+id/detail_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible"
+                    android:textAlignment="center"/>
+                <ToggleButton
+                    android:id="@+id/favorite_button"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textOff=""
+                    android:textOn=""
+                    android:background="@drawable/toggle_selector"
+                    android:onClick="onCustomToggleClick"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/detail_category_TV"
+                    android:textAlignment="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:text="Chapters"
-                    android:layout_weight="1"/>
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="3dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
-                    android:background="@drawable/horizontal_line"
-                    />
+                    android:padding="8dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="invisible"/>
+                <TextView
+                    android:id="@+id/detail_author_TV"
+                    android:textAlignment="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"/>
+                <LinearLayout
+                    android:id="@+id/description_LL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="invisible">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="Mô tả" />
+                    <TextView
+                        android:id="@+id/detail_description_TV"
+                        android:paddingTop="10dp"
+                        android:textAlignment="viewStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:text="Description"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/chapter_LL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="4"
+                    android:padding="8dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="Chapters"
+                        android:layout_weight="1"/>
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="3dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="3"
+                        android:background="@drawable/horizontal_line"
+                        />
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:id="@+id/recycler_chapter"
+                    android:layout_height="match_parent"
+
+                    >
+
+                </androidx.recyclerview.widget.RecyclerView>
             </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:id="@+id/recycler_chapter"
-                android:layout_height="match_parent"
-
-                >
-
-            </androidx.recyclerview.widget.RecyclerView>
-        </LinearLayout>
 
 
 
 
-    </androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
-</LinearLayout>
+
+</RelativeLayout>

@@ -2,6 +2,7 @@ package com.example.androidreader.Activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +49,6 @@ public class DetailManga extends AppCompatActivity {
     ProgressBar progressBar;
     ToggleButton favoriteBtn;
     RecyclerView chapterRecyclerView;
-    ListView chapterLV;
     Manga manga;
     MangaDetail mangaDetail;
 

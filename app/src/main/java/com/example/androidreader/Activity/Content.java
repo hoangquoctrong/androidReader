@@ -73,7 +73,7 @@ public class Content extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(position == mangaChapterList.size())
+                if(position == mangaChapterList.size() - 1)
                 {
                     Toast.makeText(Content.this, "You are reading last chapter", Toast.LENGTH_SHORT).show();
                 }

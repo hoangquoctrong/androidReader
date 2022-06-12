@@ -5,8 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
@@ -34,11 +36,18 @@ public class ContentPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
+        CircularProgressDrawable drawable = new CircularProgressDrawable(mContext.getApplicationContext());
+        drawable.setColorSchemeColors(R.color.primaryColor, R.color.purple_700, R.color.teal_700);
+        drawable.setCenterRadius(30f);
+        drawable.setStrokeWidth(5f);
+        // set all other properties as you would see fit and start it
+        drawable.start();
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View layout = (ViewGroup) inflater.inflate(R.layout.content_page,container,false);
 
+        ProgressBar progressBar = (ProgressBar) layout.findViewById(R.id.content_item_progress);
         ImageView page_image = (ImageView) layout.findViewById(R.id.content_IV);
-        Glide.with(mContext).load(content.get(position)).into(page_image);
+        Glide.with(mContext).load(content.get(position)).placeholder(drawable).into(page_image);
 
         container.addView(layout);
         return layout;

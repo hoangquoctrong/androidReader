@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
@@ -47,14 +48,20 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tv_title.setText(mangas.get(position).getTitle());
+        CircularProgressDrawable drawable = new CircularProgressDrawable(mContext.getApplicationContext());
+        drawable.setColorSchemeColors(R.color.primaryColor, R.color.purple_700, R.color.teal_700);
+        drawable.setCenterRadius(30f);
+        drawable.setStrokeWidth(5f);
+        // set all other properties as you would see fit and start it
+        drawable.start();
         GlideUrl glideUrl = new GlideUrl(mangas.get(position).getCoverURL(), new LazyHeaders.Builder()
                 .addHeader("User-Agent", "Mozilla")
                 .build());
-        Glide.with(mContext).load(glideUrl).into(holder.manga_thumbnail);
+        Glide.with(mContext).load(glideUrl).placeholder(drawable).into(holder.manga_thumbnail);
 
         holder.manga_card.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View  view) {
                 Intent intent = new Intent(mContext, DetailManga.class);
                 intent.putExtra("manga", mangas.get(position));
                 mContext.startActivity(intent);

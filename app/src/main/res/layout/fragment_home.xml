@@ -6,34 +6,42 @@
     tools:context="Fragment.HomeFragment"
     android:id="@+id/homeFragment">
 
-    <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/homeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="4dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mới cập nhật"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView_id"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+        android:layout_height="match_parent">
 
-        </androidx.recyclerview.widget.RecyclerView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-            <ProgressBar
-                android:id="@+id/progress_circular"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:visibility="visible"
-                />
-        </LinearLayout>
+            android:orientation="vertical">
+            <include layout="@layout/home_appbar"/>
 
-    </LinearLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:padding="4dp"
+                android:id="@+id/recyclerView_id"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+            </androidx.recyclerview.widget.RecyclerView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <ProgressBar
+                    android:id="@+id/progress_circular"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
 </FrameLayout>

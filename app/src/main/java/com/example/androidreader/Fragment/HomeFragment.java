@@ -6,11 +6,19 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -35,7 +43,13 @@ public class HomeFragment extends Fragment {
 
     RecyclerView recyclerView;
     ProgressBar progressIndicator;
+    SwipeRefreshLayout refress;
+    boolean isInit = true;
+    boolean isSearching = false;
+    HomeRecyclerViewAdapter homeAdapter;
+    Toolbar toolbar;
 
+    String searchQuery;
     int page = 2;
     List<Manga> mangas = new ArrayList<>();
     public HomeFragment() {
@@ -45,7 +59,35 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.home_menu,menu);
+        MenuItem item = menu.findItem(R.id.search_icon);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setQueryHint("Type here to search");
+        searchView.clearFocus();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchQuery = query;
+                isSearching = true;
+                progressIndicator.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                new RetrieveData().execute();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu,inflater);
     }
 
     @Override
@@ -56,15 +98,36 @@ public class HomeFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_id);
         progressIndicator = (ProgressBar) view.findViewById(R.id.progress_circular);
+        refress = (SwipeRefreshLayout) view.findViewById(R.id.homeRefresh);
+        toolbar = view.findViewById(R.id.home_appbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+
+        refress.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isInit = true;
+                mangas.clear();
+                isSearching = false;
+                new RetrieveData().execute();
+            }
+        });
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (! recyclerView.canScrollVertically(1)){ //1 for down
-                    new RetrieveData().execute();
+                System.out.println("is searching: " + isSearching);
+                if(isSearching == false)
+                {
+                    progressIndicator.setVisibility(View.VISIBLE);
+                    if (! recyclerView.canScrollVertically(1)){ //1 for down
+                        new RetrieveData().execute();
+                    }
                 }
+
             }
         });
+
         new RetrieveData().execute();
         // Inflate the layout for this fragment
         return view;
@@ -73,39 +136,38 @@ public class HomeFragment extends Fragment {
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     void ScarperHome() throws IOException {
-
         Document doc = Jsoup.connect("https://truyentranh.net/").userAgent("Mozilla").get();
-        ArrayList<String> mangaList = new ArrayList<>();
         Elements datas = doc.select("div.content > div.box > div.card-list > div.card > a");
         for (Element data : datas)
         {
-            System.out.println(data);
-//            Element divData = data.getElementsByTag("div").get(0);
-//            System.out.println(divData.html());
             Element imgData = data.getElementsByTag("img").get(0);
-            System.out.println(imgData.html());
-
             mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
-            System.out.println(imgData.attr("src"));
-
         }
+    }
+
+
+    void SearchContent() throws IOException {
+        mangas.clear();
+        String search = searchQuery.replaceAll(" ", "+");
+        System.out.println(search);
+        Document doc = Jsoup.connect("https://truyentranh.net/search?q=" + search).userAgent("Mozilla").get();
+        Elements datas = doc.select("div.main-content > div.content > div.box > div.card-list > div.card > a");
+        for (Element data : datas)
+        {
+            Element imgData = data.getElementsByTag("img").get(0);
+            mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
+        }
+        System.out.println(mangas);
     }
 
     void LoadMore() throws IOException {
         page++;
-        Document doc = Jsoup.connect("https://saytruyen.net/?page=" + page).userAgent("Mozilla").get();
-        Elements datas = doc.select("div.manga-content > div.row.px-2.list-item > div > div.page-item-detail > div.item-thumb.hover-details.c-image-hover > a ");
+        Document doc = Jsoup.connect("https://truyentranh.net/comic-latest?page=" + page).userAgent("Mozilla").get();
+        Elements datas = doc.select("div.content > div.box > div.card-list > div.card > a");
         for (Element data : datas)
         {
             Element imgData = data.getElementsByTag("img").get(0);
-            if(imgData.attr("src").isEmpty())
-            {
-                mangas.add(new Manga(data.attr("title"),imgData.attr("data-src"),data.attr("href")));
-            }
-            else
-            {
-                mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
-            }
+            mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
         }
     }
 
@@ -115,15 +177,33 @@ public class HomeFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                if(mangas.isEmpty())
-                    ScarperHome();
+                if(isSearching)
+                {
+                    SearchContent();
+                }
                 else
-                    LoadMore();
+                {
+                    if(mangas.isEmpty())
+                    {
+                        ScarperHome();
+                    }
 
+                    else
+                    {
+                        LoadMore();
+                    }
+
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
         }
 
         @Override
@@ -135,9 +215,22 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
             recyclerView.setVisibility(View.VISIBLE);
-            HomeRecyclerViewAdapter homeAdapter = new HomeRecyclerViewAdapter(getActivity(),mangas);
-            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
-            recyclerView.setAdapter(homeAdapter);
+            if(isInit)
+            {
+                homeAdapter = new HomeRecyclerViewAdapter(getActivity(),mangas);
+                recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
+                recyclerView.setAdapter(homeAdapter);
+                isInit = false;
+            }
+            else
+            {
+                System.out.println(mangas);
+                homeAdapter.notifyDataSetChanged();
+            }
+
+            if (refress.isRefreshing()) {
+                refress.setRefreshing(false);
+            }
             progressIndicator.setVisibility(View.GONE);
         }
     }
