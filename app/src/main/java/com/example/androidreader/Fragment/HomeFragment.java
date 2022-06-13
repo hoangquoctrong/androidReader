@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import com.example.androidreader.Activity.MainActivity;
 import com.example.androidreader.Apdapter.HomeRecyclerViewAdapter;
 import com.example.androidreader.Model.Manga;
+import com.example.androidreader.Model.MangaData;
 import com.example.androidreader.R;
 
 import org.jsoup.Jsoup;
@@ -51,7 +52,7 @@ public class HomeFragment extends Fragment {
 
     String searchQuery;
     int page = 2;
-    List<Manga> mangas = new ArrayList<>();
+    List<MangaData> mangas = new ArrayList<>();
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -128,6 +129,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
         new RetrieveData().execute();
         // Inflate the layout for this fragment
         return view;
@@ -141,7 +143,7 @@ public class HomeFragment extends Fragment {
         for (Element data : datas)
         {
             Element imgData = data.getElementsByTag("img").get(0);
-            mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
+            mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
         }
     }
 
@@ -155,7 +157,7 @@ public class HomeFragment extends Fragment {
         for (Element data : datas)
         {
             Element imgData = data.getElementsByTag("img").get(0);
-            mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
+            mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
         }
         System.out.println(mangas);
     }
@@ -167,7 +169,7 @@ public class HomeFragment extends Fragment {
         for (Element data : datas)
         {
             Element imgData = data.getElementsByTag("img").get(0);
-            mangas.add(new Manga(data.attr("title"),imgData.attr("src"),data.attr("href")));
+            mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
         }
     }
 

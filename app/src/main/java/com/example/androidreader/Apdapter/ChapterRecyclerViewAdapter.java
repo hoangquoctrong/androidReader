@@ -3,6 +3,7 @@ package com.example.androidreader.Apdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,20 +16,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.androidreader.Activity.Content;
 import com.example.androidreader.Activity.DetailManga;
+import com.example.androidreader.DAO.MangaDAO;
 import com.example.androidreader.Model.Manga;
 import com.example.androidreader.Model.MangaChapter;
+import com.example.androidreader.Model.MangaData;
 import com.example.androidreader.R;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ChapterRecyclerViewAdapter  extends RecyclerView.Adapter<ChapterRecyclerViewAdapter.MyViewHolder> {
     private Context mContext;
     private List<MangaChapter> chapters;
+    private String mangaURL;
+    MangaData mangaData;
 
-    public ChapterRecyclerViewAdapter(Context mContext, List<MangaChapter> chapters) {
+
+    public ChapterRecyclerViewAdapter(Context mContext, List<MangaChapter> chapters,String URL) {
         this.mContext = mContext;
         this.chapters = chapters;
+        this.mangaURL = URL;
     }
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -56,10 +66,30 @@ public class ChapterRecyclerViewAdapter  extends RecyclerView.Adapter<ChapterRec
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, Content.class);
-                intent.putExtra("chapters", (Serializable) chapters);
-                intent.putExtra("position",position);
-                mContext.startActivity(intent);
+                try
+                {
+                    MangaDAO mangaDAO = new MangaDAO(mContext);
+                    mangaDAO.checkDatabase();
+                    mangaData = mangaDAO.getData(mangaURL);
+                    mangaData.setDate(Calendar.getInstance().getTime());
+                    mangaData.setChapterName(chapters.get(position).getChapterName());
+                    mangaData.setChapterURL(chapters.get(position).getChapterURL());
+                    mangaData.setChapterIndex(position);
+                    mangaDAO.EditManga(mangaData);
+                    Intent intent = new Intent(mContext, Content.class);
+                    intent.putExtra("chapters", (Serializable) chapters);
+                    intent.putExtra("position",position);
+                    intent.putExtra("data",mangaData);
+                    System.out.println("chapter name: " + chapters.get(position).getChapterName());
+                    System.out.println("chapte url: " + chapters.get(position).getChapterURL());
+                    mContext.startActivity(intent);
+                }
+                catch (SQLiteException e)
+                {
+                    e.printStackTrace();
+                    System.out.println("Somthing is wrong in chapter");
+                }
+
                 Toast.makeText(mContext, chapters.get(position).getChapterURL(), Toast.LENGTH_SHORT).show();
             }
         });

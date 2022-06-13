@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,8 +17,10 @@ import android.widget.Toast;
 
 import com.example.androidreader.Apdapter.ContentPagerAdapter;
 import com.example.androidreader.Apdapter.HomeRecyclerViewAdapter;
+import com.example.androidreader.DAO.MangaDAO;
 import com.example.androidreader.Model.Manga;
 import com.example.androidreader.Model.MangaChapter;
+import com.example.androidreader.Model.MangaData;
 import com.example.androidreader.R;
 
 import org.jsoup.Jsoup;
@@ -27,6 +30,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Content extends AppCompatActivity {
@@ -38,6 +42,7 @@ public class Content extends AppCompatActivity {
     ViewPager contentVP;
     ProgressBar contentPB;
     View back,next;
+    MangaData mangaData;
     TextView chapterTxt;
 
     @Override
@@ -47,6 +52,7 @@ public class Content extends AppCompatActivity {
         Intent intent = getIntent();
         mangaChapterList = (List<MangaChapter>) intent.getSerializableExtra("chapters");
         position = intent.getIntExtra("position",0);
+        mangaData = (MangaData) intent.getSerializableExtra("data");
         chapterTxt = findViewById(R.id.content_txt);
         back = findViewById(R.id.chapter_back);
         next = findViewById(R.id.chapter_next);
@@ -65,6 +71,7 @@ public class Content extends AppCompatActivity {
                 else
                 {
                     position--;
+                    saveHistory();
                     contentList.clear();
                     new RetrieveData().execute();
                 }
@@ -80,6 +87,7 @@ public class Content extends AppCompatActivity {
                 else
                 {
                     position++;
+                    saveHistory();
                     contentList.clear();
                     new RetrieveData().execute();
                 }
@@ -88,6 +96,25 @@ public class Content extends AppCompatActivity {
 
         new RetrieveData().execute();
 
+    }
+
+    void saveHistory()
+    {
+        try
+        {
+            MangaDAO mangaDAO = new MangaDAO(getApplicationContext());
+            mangaDAO.checkDatabase();
+            mangaData.setDate(Calendar.getInstance().getTime());
+            mangaData.setChapterName(mangaChapterList.get(position).getChapterName());
+            mangaData.setChapterURL(mangaChapterList.get(position).getChapterURL());
+            mangaData.setChapterIndex(position);
+            mangaDAO.EditManga(mangaData);
+        }
+        catch (SQLiteException e)
+        {
+            e.printStackTrace();
+            System.out.println("Somthing is wrong in chapter");
+        }
     }
 
 
