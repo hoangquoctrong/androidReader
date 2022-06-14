@@ -37,18 +37,21 @@ public class Content extends AppCompatActivity {
 
     List<MangaChapter> mangaChapterList;
     int position;
+    String source;
     List<String> contentList = new ArrayList<>();
 
+    //View object
     ViewPager contentVP;
     ProgressBar contentPB;
     View back,next;
     MangaData mangaData;
     TextView chapterTxt;
-    String source;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //init view
         setContentView(R.layout.activity_content);
         Intent intent = getIntent();
         mangaChapterList = (List<MangaChapter>) intent.getSerializableExtra("chapters");
@@ -61,10 +64,11 @@ public class Content extends AppCompatActivity {
         contentPB = findViewById(R.id.content_progress);
         chapterTxt.setText(mangaChapterList.get(position).getChapterName());
 
-
+        //Get link source like "https://truyentranh.net/onepunch-man" it will get "https://truyentranh.net/"
         source = mangaChapterList.get(position).getChapterURL().split(".net")[0] + (".net/");
 
 
+        //To previous chapter button
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +85,8 @@ public class Content extends AppCompatActivity {
                 }
             }
         });
+
+        //To next chapter button
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,6 +108,7 @@ public class Content extends AppCompatActivity {
 
     }
 
+    //Save data into history
     void saveHistory()
     {
         try
@@ -122,10 +129,12 @@ public class Content extends AppCompatActivity {
     }
 
 
+    //Scrape Data from content home
     void FetchManga() throws IOException {
         Document doc = Jsoup.connect(mangaChapterList.get(position).getChapterURL()).userAgent("Mozilla").get();
 
         System.out.println("Source: " + source);
+        //Check source to start scraping
         switch (source)
         {
             case "https://truyentranh.net/":
@@ -155,6 +164,7 @@ public class Content extends AppCompatActivity {
 
     }
 
+    //AsyncTask to show loading while scraping data
     class RetrieveData extends AsyncTask<Void, Void, Void> {
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -177,6 +187,7 @@ public class Content extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void unused) {
+            //Show data after scraping successfully
             super.onPostExecute(unused);
             System.out.println("contents " + contentList.toString());
             ContentPagerAdapter adapter = new ContentPagerAdapter(getApplicationContext(),contentList);

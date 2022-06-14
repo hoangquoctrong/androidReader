@@ -24,10 +24,11 @@ import com.example.androidreader.R;
 
 import java.io.Serializable;
 import java.util.List;
-
+//This adapter work for Home Fragment and Favorite Fragment
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewAdapter.MyViewHolder> {
 
 
+    //List mangas to get Data for the card
     private Context mContext;
     private List<MangaData> mangas;
 
@@ -40,6 +41,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        //Choose item from layout as view for each element in manga
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
         view = mInflater.inflate(R.layout.cardview_manga,parent,false);
@@ -48,6 +50,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        //Set data for view object
         holder.tv_title.setText(mangas.get(position).getTitle());
         CircularProgressDrawable drawable = new CircularProgressDrawable(mContext.getApplicationContext());
         drawable.setColorSchemeColors(R.color.primaryColor, R.color.purple_700, R.color.teal_700);
@@ -60,6 +63,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
                 .build());
         Glide.with(mContext).load(glideUrl).placeholder(drawable).into(holder.manga_thumbnail);
 
+        //View on click to get to detail view
         holder.manga_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View  view) {

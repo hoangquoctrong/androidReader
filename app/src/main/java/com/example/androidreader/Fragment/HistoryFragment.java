@@ -21,6 +21,7 @@ import com.example.androidreader.Model.MangaData;
 
 import java.util.List;
 
+//This class work like favoriteFragment
 public class HistoryFragment extends Fragment {
 
     RecyclerView recyclerView;

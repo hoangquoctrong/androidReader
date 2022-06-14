@@ -24,9 +24,12 @@ import java.util.List;
 
 public class FavoriteFragment extends Fragment {
 
+    //View object
     RecyclerView recyclerView;
     SwipeRefreshLayout refresh;
     HomeRecyclerViewAdapter homeAdapter;
+
+    //List manga favorite and mangaDAO to get data
     List<MangaData> manga;
     MangaDAO mangaDAO;
 
@@ -42,9 +45,11 @@ public class FavoriteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //initialize data
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.favorite_rv);
         refresh = (SwipeRefreshLayout) view.findViewById(R.id.favorite_Refresh);
+        //Get data, catch if something wrong with the database
         try {
             mangaDAO = new MangaDAO(getActivity());
             mangaDAO.checkDatabase();
@@ -62,6 +67,7 @@ public class FavoriteFragment extends Fragment {
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //Refresh data
                 homeAdapter.notifyDataSetChanged();
             }
         });

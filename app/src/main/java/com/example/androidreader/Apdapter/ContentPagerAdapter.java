@@ -17,8 +17,10 @@ import com.example.androidreader.R;
 
 import java.util.List;
 
+//This class work as a adapter for Content Class
 public class ContentPagerAdapter extends PagerAdapter {
 
+    //List<String> content work as the content URL to show it into listview
     private Context mContext;
     private List<String> content;
 
@@ -36,11 +38,11 @@ public class ContentPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
+        //Get data into ImageView
         CircularProgressDrawable drawable = new CircularProgressDrawable(mContext.getApplicationContext());
         drawable.setColorSchemeColors(R.color.primaryColor, R.color.purple_700, R.color.teal_700);
         drawable.setCenterRadius(30f);
         drawable.setStrokeWidth(5f);
-        // set all other properties as you would see fit and start it
         drawable.start();
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View layout = (ViewGroup) inflater.inflate(R.layout.content_page,container,false);
@@ -62,6 +64,5 @@ public class ContentPagerAdapter extends PagerAdapter {
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View) object);
-
     }
 }

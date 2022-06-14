@@ -28,6 +28,7 @@ public class MangaDAO extends SQLiteOpenHelper {
     private SQLiteDatabase myDatabase;
 
 
+    //init Data
     public MangaDAO(@Nullable Context context) {
         super(context, DB_NAME, null,1);
         if(Build.VERSION.SDK_INT>=17)
@@ -39,6 +40,7 @@ public class MangaDAO extends SQLiteOpenHelper {
         }
     }
 
+    //Check if Database exist
     public void checkDatabase()
     {
         SQLiteDatabase TempDB = null;
@@ -51,6 +53,7 @@ public class MangaDAO extends SQLiteOpenHelper {
             TempDB.close();
     }
 
+    //Open Database
     public void openDatabase(){
         String path = DB_PATH+DB_NAME;
         myDatabase = SQLiteDatabase.openDatabase(path,null,SQLiteDatabase.OPEN_READWRITE);
@@ -67,6 +70,7 @@ public class MangaDAO extends SQLiteOpenHelper {
     public static final String COLUMN_DATE = "DATE";
     public static final String COLUMN_CHAPTER_INDEX = "CHAPTERINDEX";
 
+    //close database
     @Override
     public synchronized void close() {
         if(myDatabase!=null)
@@ -75,7 +79,7 @@ public class MangaDAO extends SQLiteOpenHelper {
     }
 
 
-
+    //Create Data table MANGA_TABLE
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createTableStatement = "CREATE TABLE " + MANGA_TABLE + "("
@@ -92,6 +96,7 @@ public class MangaDAO extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(createTableStatement);
     }
 
+    //Add new manga to database
     public void addOne(MangaData mangaData)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -107,6 +112,7 @@ public class MangaDAO extends SQLiteOpenHelper {
         db.insert(MANGA_TABLE,null,cv);
     }
 
+    //Edit a specific mangaData for history or favorite
     public void EditManga(MangaData mangaData)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -125,6 +131,7 @@ public class MangaDAO extends SQLiteOpenHelper {
         db.update(MANGA_TABLE,cv,where, null);
     }
 
+    //Check if data exist in database
     public boolean checkExist(String MangaURL){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + MANGA_TABLE + " WHERE " + COLUMN_LINK_URL + " = '" + MangaURL + "'";
@@ -136,6 +143,7 @@ public class MangaDAO extends SQLiteOpenHelper {
 
     }
 
+    //Get all favorite manga
     public List<MangaData> getAllFavorite()
     {
         List<MangaData> returnList = new ArrayList<>();
@@ -177,6 +185,7 @@ public class MangaDAO extends SQLiteOpenHelper {
         return returnList;
     }
 
+    //Get 1 specific data for mangaDetail
     public MangaData getData(String MangaURL)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -190,8 +199,6 @@ public class MangaDAO extends SQLiteOpenHelper {
         System.out.println("Favorite database " + c.getInt(6));
         System.out.println("Favorite: " + favorite);
         String Date = c.getString(7);
-
-
         Date date1= new Date();
         try {
             SimpleDateFormat sdf=new SimpleDateFormat("E MMM dd hh:mm:ss Z yyyy");
@@ -206,6 +213,7 @@ public class MangaDAO extends SQLiteOpenHelper {
 
     }
 
+    //Get all history data
     public List<MangaData> getHistory(){
         List<MangaData> returnList = new ArrayList<>();
 

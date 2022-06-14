@@ -46,20 +46,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//This class get the newest data from the source it scarpe
 public class HomeFragment extends Fragment {
 
-
+    //View object
     RecyclerView recyclerView;
     ProgressBar progressIndicator;
     SwipeRefreshLayout refress;
-    boolean isInit = true;
-    boolean isSearching = false;
     HomeRecyclerViewAdapter homeAdapter;
     Toolbar toolbar;
     Button srcBtn;
+
+    //Object to check
+    boolean isInit = true;
+    boolean isSearching = false;
+
+    //for searching
     String searchQuery;
+
+    //Get page
     int page = 2;
+
+    //manga list for app
     List<MangaData> mangas = new ArrayList<>();
     public HomeFragment() {
         // Required empty public constructor
@@ -72,6 +80,7 @@ public class HomeFragment extends Fragment {
     }
 
 
+    //Menu view which include search
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.home_menu,menu);
@@ -80,6 +89,7 @@ public class HomeFragment extends Fragment {
         searchView.setQueryHint("Type here to search");
         searchView.clearFocus();
 
+        //Search function
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -99,12 +109,13 @@ public class HomeFragment extends Fragment {
         super.onCreateOptionsMenu(menu,inflater);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //initialize View
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_id);
         progressIndicator = (ProgressBar) view.findViewById(R.id.progress_circular);
         refress = (SwipeRefreshLayout) view.findViewById(R.id.homeRefresh);
@@ -113,21 +124,25 @@ public class HomeFragment extends Fragment {
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
 
 
+        //Change source button
         srcBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Open dialog to select source
                 SourceDialogFragment srcDialog = new SourceDialogFragment();
-                DialogInterface dialog;
                 srcDialog.show(getActivity().getSupportFragmentManager(), "sourceDialog");
-
             }
         });
+
+        //Refresh button
         refress.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 RefreshContent();
             }
         });
+
+        //Load more data after scrolled to the end
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -145,6 +160,7 @@ public class HomeFragment extends Fragment {
         });
 
 
+        //Retrieve data using async task
         new RetrieveData().execute();
         // Inflate the layout for this fragment
         return view;
@@ -153,11 +169,14 @@ public class HomeFragment extends Fragment {
     }
 
 
+    //Get Data from source
     @RequiresApi(api = Build.VERSION_CODES.N)
     void ScarperHome() throws IOException {
         System.out.println(SourceID.source);
         mangas.clear();
+        //restart page
         page = 1;
+        //check source
         switch (SourceID.source)
         {
             case "https://truyentranh.net/":
@@ -170,6 +189,7 @@ public class HomeFragment extends Fragment {
                 }
                 break;
             }
+            //For saytruyen
             default:
             {
                 Document doc = Jsoup.connect("https://saytruyen.net/").userAgent("Mozilla").get();
@@ -191,11 +211,9 @@ public class HomeFragment extends Fragment {
                 break;
             }
         }
-        System.out.println(mangas.size());
-
-
     }
 
+    //Refresh content using set isInit
     void RefreshContent()
     {
         isInit = true;
@@ -205,6 +223,7 @@ public class HomeFragment extends Fragment {
     }
 
 
+    //Search content by getting isSearching = true
     void SearchContent() throws IOException {
         mangas.clear();
         String search = searchQuery.replaceAll(" ", "+");
@@ -236,6 +255,7 @@ public class HomeFragment extends Fragment {
 
     }
 
+    //Load more content after scrolled to the end
     void LoadMore() throws IOException {
         page++;
         switch (SourceID.source)
@@ -275,24 +295,25 @@ public class HomeFragment extends Fragment {
 
     }
 
+    //AsyncTask loading content
     class RetrieveData extends AsyncTask<Void, Void, Void> {
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                if(isSearching)
+                if(isSearching) // is Searching
                 {
                     SearchContent();
                 }
                 else
                 {
-                    if(mangas.isEmpty())
+                    if(mangas.isEmpty()) //If mangas is Empty it will refresh data
                     {
                         ScarperHome();
                     }
 
-                    else
+                    else // else it will Load more data
                     {
                         LoadMore();
                     }
@@ -319,19 +340,20 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
             recyclerView.setVisibility(View.VISIBLE);
-            if(isInit)
+            if(isInit) // if refreshing or just starting it will get from the start
             {
                 homeAdapter = new HomeRecyclerViewAdapter(getActivity(),mangas);
                 recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
                 recyclerView.setAdapter(homeAdapter);
                 isInit = false;
             }
-            else
+            else // Load more data by notifyDataSetChanged in adapter
             {
                 System.out.println(mangas);
                 homeAdapter.notifyDataSetChanged();
             }
 
+            //set Refresh loading view
             if (refress.isRefreshing()) {
                 refress.setRefreshing(false);
             }

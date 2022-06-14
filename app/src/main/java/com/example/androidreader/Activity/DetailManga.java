@@ -52,6 +52,7 @@ import java.util.List;
 
 public class DetailManga extends AppCompatActivity {
 
+    //View Object
     TextView titleTV, categoryTV,descriptionTV, authorTV;
     ImageView thumbnailIV;
     LinearLayout descriptionLL,chapterLL;
@@ -59,12 +60,15 @@ public class DetailManga extends AppCompatActivity {
     ToggleButton favoriteBtn;
     RecyclerView chapterRecyclerView;
     FloatingActionButton playButton;
+
+    //Manga data
     MangaData manga;
     MangaDetail mangaDetail;
     MangaData mangaData;
-
     List<MangaChapter> mangaChapters= new ArrayList<>();
     MangaDAO mangaDAO;
+
+    //Check source
     String source;
 
 
@@ -74,6 +78,7 @@ public class DetailManga extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_manga);
 
+        //Initialize data
         Intent intent = getIntent();
         manga = (MangaData) intent.getSerializableExtra("manga");
         titleTV = (TextView) findViewById(R.id.detail_title_TV);
@@ -88,9 +93,27 @@ public class DetailManga extends AppCompatActivity {
         chapterRecyclerView = (RecyclerView) findViewById(R.id.recycler_chapter);
         playButton = (FloatingActionButton) findViewById(R.id.play_fab);
 
+        //Check source
         source = manga.getLinkURL().split(".net")[0] + ".net/";
 
+        //Start scraping data
+        titleTV.setText(manga.getTitle());
+        Glide.with(getApplication()).load(manga.getCoverURL()).into(thumbnailIV);
+        new RetrieveData().execute();
 
+        //Initialize database
+        try{
+            mangaDAO = new MangaDAO(getApplicationContext());
+            mangaDAO.checkDatabase();
+        }
+        catch(SQLiteException e)
+        {
+            e.printStackTrace();
+        }
+
+
+
+        //Play button by history( IF the manga have not been read yet, it will start at fisrt chapter)
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,6 +137,7 @@ public class DetailManga extends AppCompatActivity {
                         System.out.println("Somthing is wrong in chapter");
                     }
                 }
+                //Start Content activity
                 Intent intent = new Intent(getApplicationContext(), Content.class);
                 intent.putExtra("chapters", (Serializable) mangaChapters);
                 intent.putExtra("position",position);
@@ -123,28 +147,12 @@ public class DetailManga extends AppCompatActivity {
                 getApplicationContext().startActivity(intent);
             }
         });
-
-        titleTV.setText(manga.getTitle());
-
-
-        Glide.with(getApplication()).load(manga.getCoverURL()).into(thumbnailIV);
-        new RetrieveData().execute();
-
-        try{
-            mangaDAO = new MangaDAO(getApplicationContext());
-            mangaDAO.checkDatabase();
-        }
-        catch(SQLiteException e)
-        {
-            e.printStackTrace();
-        }
-
-
     }
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
+    //Get detail data of manga
     void ScarperHome() throws IOException {
         Document doc = Jsoup.connect(manga.getLinkURL()).userAgent("Mozilla").get();
-
+        //Check source
         switch (source)
         {
             case "https://truyentranh.net/":
@@ -159,7 +167,6 @@ public class DetailManga extends AppCompatActivity {
                     mangaChapters.add(new MangaChapter(chapter.text(),chapter.attr("href"),i));
                     i++;
                 }
-
                 mangaDetail = new MangaDetail(
                         manga.getTitle(),manga.getCoverURL(),
                         manga.getLinkURL(), description.get(0).text(),
@@ -188,10 +195,9 @@ public class DetailManga extends AppCompatActivity {
             }
 
         }
-
-
-
+        //Get data for mangaData
         mangaData = new MangaData(manga.getTitle(),manga.getCoverURL(),manga.getLinkURL(),"","",false, Calendar.getInstance().getTime(),0);
+        //Check if manga exist in history then add 1 if not
         try {
             if(!mangaDAO.checkExist(manga.getLinkURL()))
             {
@@ -210,17 +216,17 @@ public class DetailManga extends AppCompatActivity {
 
     }
 
+    //Favorite button
     public void onCustomToggleClick(View view) {
-        Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
-        System.out.println("Link URL: " + mangaData.getLinkURL());
+        //Set mangaData Favorited to its opposite value then load edit it in database
         boolean Favorite = mangaData.isFavorited();
         mangaData.setFavorited(!Favorite);
         mangaDAO.EditManga(mangaData);
         MangaData checkData = mangaDAO.getData(manga.getLinkURL());
-        System.out.println("Check data: " + checkData.isFavorited());
     }
 
 
+    //Loading while retrieve data using AsyncTask
     class RetrieveData extends AsyncTask<Void, Void, Void> {
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -241,22 +247,18 @@ public class DetailManga extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void unused) {
+            //Load data to the screen after get Data successfully
             super.onPostExecute(unused);
             titleTV.setText(mangaDetail.getTitle());
             descriptionTV.setText(mangaDetail.getDescription());
             categoryTV.setText("Thể loại: " + mangaDetail.getCategory());
             authorTV.setText("Tác giả: " + mangaDetail.getArtist());
 
-            System.out.println("chapters: " + mangaChapters.toString());
-
-
-            System.out.println("Linkurl: " + mangaData.getLinkURL());
             ChapterRecyclerViewAdapter chapterAdapter = new ChapterRecyclerViewAdapter(getApplicationContext(),mangaChapters,mangaData);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             chapterRecyclerView.setLayoutManager(mLayoutManager);
             chapterRecyclerView.setAdapter(chapterAdapter);
             chapterRecyclerView.setNestedScrollingEnabled(false);
-
 
             progressBar.setVisibility(View.GONE);
             chapterRecyclerView.setVisibility(View.VISIBLE);

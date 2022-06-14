@@ -28,10 +28,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+// This class work as a adapter for chapter List in detail manga
 public class ChapterRecyclerViewAdapter  extends RecyclerView.Adapter<ChapterRecyclerViewAdapter.MyViewHolder> {
     private Context mContext;
+    //Get Chapters, mangaData for init content data
     private List<MangaChapter> chapters;
-    private String mangaURL;
     private MangaData mangaData;
 
 
@@ -52,6 +53,8 @@ public class ChapterRecyclerViewAdapter  extends RecyclerView.Adapter<ChapterRec
     @NonNull
     @Override
     public ChapterRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        //Select item from layout as adapter
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
         view = mInflater.inflate(R.layout.chapter_item,parent,false);
@@ -61,8 +64,11 @@ public class ChapterRecyclerViewAdapter  extends RecyclerView.Adapter<ChapterRec
 
     @Override
     public void onBindViewHolder(@NonNull ChapterRecyclerViewAdapter.MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
+
+        //Get Data into object view
         String name = chapters.get(position).getChapterName();
         holder.txt_chapter.setText(name);
+        //On click of object will show Content Activity and send data to Content so it can scrape data
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

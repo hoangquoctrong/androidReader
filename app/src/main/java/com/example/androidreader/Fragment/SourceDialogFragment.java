@@ -13,6 +13,8 @@ import androidx.fragment.app.DialogFragment;
 import com.example.androidreader.R;
 import com.example.androidreader.SourceID;
 
+
+//Dialog class to show dialog
 public class SourceDialogFragment extends DialogFragment {
 
     @NonNull
@@ -27,6 +29,7 @@ public class SourceDialogFragment extends DialogFragment {
         builder.setItems(source, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                //Set SourceID to other source
                 SourceID.ID = i;
                 SourceID.source = source[i];
                 Toast.makeText(getActivity(), SourceID.ID + " " + SourceID.source, Toast.LENGTH_SHORT).show();

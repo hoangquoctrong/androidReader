@@ -24,9 +24,11 @@ import com.example.androidreader.R;
 
 import java.util.List;
 
+//This class work as History adapter
 public class HistoryRecyclerViewAdapter extends RecyclerView.Adapter<HistoryRecyclerViewAdapter.MyViewHolder>{
 
 
+    //List of mangas to show manga history
     private Context mContext;
     private List<MangaData> mangas;
 
@@ -47,6 +49,7 @@ public class HistoryRecyclerViewAdapter extends RecyclerView.Adapter<HistoryRecy
 
     @Override
     public void onBindViewHolder(@NonNull HistoryRecyclerViewAdapter.MyViewHolder holder, int position) {
+        //Set data into view object
         holder.chapter_name.setText(mangas.get(position).getTitle());
         if(mangas.get(position).getChapterName().isEmpty())
         {
@@ -68,6 +71,7 @@ public class HistoryRecyclerViewAdapter extends RecyclerView.Adapter<HistoryRecy
                 .build());
         Glide.with(mContext).load(glideUrl).placeholder(drawable).into(holder.manga_thumbnail);
 
+        //View detail after click item
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
