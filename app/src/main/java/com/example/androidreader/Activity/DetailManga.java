@@ -65,6 +65,7 @@ public class DetailManga extends AppCompatActivity {
 
     List<MangaChapter> mangaChapters= new ArrayList<>();
     MangaDAO mangaDAO;
+    String source;
 
 
 
@@ -86,6 +87,8 @@ public class DetailManga extends AppCompatActivity {
         favoriteBtn = (ToggleButton) findViewById(R.id.favorite_button);
         chapterRecyclerView = (RecyclerView) findViewById(R.id.recycler_chapter);
         playButton = (FloatingActionButton) findViewById(R.id.play_fab);
+
+        source = manga.getLinkURL().split(".net")[0] + ".net/";
 
 
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -141,16 +144,53 @@ public class DetailManga extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     void ScarperHome() throws IOException {
         Document doc = Jsoup.connect(manga.getLinkURL()).userAgent("Mozilla").get();
-        Elements details = doc.select("div.detail-banner-info > ul > li");
-        Elements description = doc.select("div.detail-manga-intro");
-        Elements chapterList = doc.select("div.chapter-list-item-box > div.chapter-select > a");
 
-        int i = 0;
-        for (Element chapter : chapterList)
+        switch (source)
         {
-            mangaChapters.add(new MangaChapter(chapter.text(),chapter.attr("href"),i));
-            i++;
+            case "https://truyentranh.net/":
+            {
+                Elements details = doc.select("div.detail-banner-info > ul > li");
+                Elements description = doc.select("div.detail-manga-intro");
+                Elements chapterList = doc.select("div.chapter-list-item-box > div.chapter-select > a");
+
+                int i = 0;
+                for (Element chapter : chapterList)
+                {
+                    mangaChapters.add(new MangaChapter(chapter.text(),chapter.attr("href"),i));
+                    i++;
+                }
+
+                mangaDetail = new MangaDetail(
+                        manga.getTitle(),manga.getCoverURL(),
+                        manga.getLinkURL(), description.get(0).text(),
+                        details.get(0).text().replaceAll(" ", " - "), mangaChapters,details.get(2).child(1).text());
+
+                Collections.sort(mangaChapters);
+                break;
+            }
+            default:
+            {
+                Elements details = doc.select("div.post-content > div.post-content_item > div.summary-content");
+                Elements description = doc.select("div.description-summary > div.summary__content.show-more");
+                Elements chapterList = doc.select("ul.list-item.box-list-chapter.limit-height > li.wp-manga-chapter > a");
+
+                int i = 0;
+                for (Element chapter : chapterList)
+                {
+                    mangaChapters.add(new MangaChapter(chapter.text(),chapter.attr("href"),i));
+                    i++;
+                }
+                mangaDetail = new MangaDetail(
+                        manga.getTitle(),manga.getCoverURL(),
+                        manga.getLinkURL(), description.get(0).text(),
+                        details.get(5).text().replaceAll(" ", " - "), mangaChapters,details.get(2).text());
+                Collections.sort(mangaChapters);
+            }
+
         }
+
+
+
         mangaData = new MangaData(manga.getTitle(),manga.getCoverURL(),manga.getLinkURL(),"","",false, Calendar.getInstance().getTime(),0);
         try {
             if(!mangaDAO.checkExist(manga.getLinkURL()))
@@ -165,12 +205,9 @@ public class DetailManga extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Collections.sort(mangaChapters);
 
-        mangaDetail = new MangaDetail(
-                manga.getTitle(),manga.getCoverURL(),
-                manga.getLinkURL(), description.get(0).text(),
-                details.get(0).text().replaceAll(" ", " - "), mangaChapters,details.get(2).child(1).text());
+
+
     }
 
     public void onCustomToggleClick(View view) {
@@ -190,9 +227,7 @@ public class DetailManga extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-
                 ScarperHome();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -215,8 +250,8 @@ public class DetailManga extends AppCompatActivity {
             System.out.println("chapters: " + mangaChapters.toString());
 
 
-
-            ChapterRecyclerViewAdapter chapterAdapter = new ChapterRecyclerViewAdapter(getApplicationContext(),mangaChapters,manga.getLinkURL());
+            System.out.println("Linkurl: " + mangaData.getLinkURL());
+            ChapterRecyclerViewAdapter chapterAdapter = new ChapterRecyclerViewAdapter(getApplicationContext(),mangaChapters,mangaData);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             chapterRecyclerView.setLayoutManager(mLayoutManager);
             chapterRecyclerView.setAdapter(chapterAdapter);

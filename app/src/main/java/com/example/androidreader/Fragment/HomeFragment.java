@@ -1,11 +1,14 @@
 package com.example.androidreader.Fragment;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -15,19 +18,24 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 
 import com.example.androidreader.Activity.MainActivity;
 import com.example.androidreader.Apdapter.HomeRecyclerViewAdapter;
 import com.example.androidreader.Model.Manga;
 import com.example.androidreader.Model.MangaData;
 import com.example.androidreader.R;
+import com.example.androidreader.SourceID;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -49,7 +57,7 @@ public class HomeFragment extends Fragment {
     boolean isSearching = false;
     HomeRecyclerViewAdapter homeAdapter;
     Toolbar toolbar;
-
+    Button srcBtn;
     String searchQuery;
     int page = 2;
     List<MangaData> mangas = new ArrayList<>();
@@ -100,17 +108,24 @@ public class HomeFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_id);
         progressIndicator = (ProgressBar) view.findViewById(R.id.progress_circular);
         refress = (SwipeRefreshLayout) view.findViewById(R.id.homeRefresh);
+        srcBtn = (Button) view.findViewById(R.id.src_btn);
         toolbar = view.findViewById(R.id.home_appbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
 
 
+        srcBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SourceDialogFragment srcDialog = new SourceDialogFragment();
+                DialogInterface dialog;
+                srcDialog.show(getActivity().getSupportFragmentManager(), "sourceDialog");
+
+            }
+        });
         refress.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                isInit = true;
-                mangas.clear();
-                isSearching = false;
-                new RetrieveData().execute();
+                RefreshContent();
             }
         });
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -136,41 +151,128 @@ public class HomeFragment extends Fragment {
 
 
     }
+
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     void ScarperHome() throws IOException {
-        Document doc = Jsoup.connect("https://truyentranh.net/").userAgent("Mozilla").get();
-        Elements datas = doc.select("div.content > div.box > div.card-list > div.card > a");
-        for (Element data : datas)
+        System.out.println(SourceID.source);
+        mangas.clear();
+        page = 1;
+        switch (SourceID.source)
         {
-            Element imgData = data.getElementsByTag("img").get(0);
-            mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
+            case "https://truyentranh.net/":
+            {
+                Document doc = Jsoup.connect("https://truyentranh.net/").userAgent("Mozilla").get();
+                Elements datas = doc.select("div.content > div.box > div.card-list > div.card > a");
+                for (Element data : datas) {
+                    Element imgData = data.getElementsByTag("img").get(0);
+                    mangas.add(new MangaData(data.attr("title"), imgData.attr("src"), data.attr("href"), "", "", false, null, 0));
+                }
+                break;
+            }
+            default:
+            {
+                Document doc = Jsoup.connect("https://saytruyen.net/").userAgent("Mozilla").get();
+                Elements datas = doc.select("div.manga-content > div.row.px-2.list-item > div > div.page-item-detail > div.item-thumb.hover-details.c-image-hover > a");
+                for (Element data : datas) {
+                    Element imgData = data.getElementsByTag("img").get(0);
+                    String imgURL;
+                    if(imgData.attr("data-src").isEmpty())
+                    {
+                        imgURL = imgData.attr("src");
+                    }
+                    else
+                    {
+                        imgURL = imgData.attr("data-src");
+                    }
+                    System.out.println("Image url: " + imgURL);
+                    mangas.add(new MangaData(data.attr("title"), imgURL, data.attr("href"), "", "", false, null, 0));
+                }
+                break;
+            }
         }
+        System.out.println(mangas.size());
+
+
+    }
+
+    void RefreshContent()
+    {
+        isInit = true;
+        mangas.clear();
+        isSearching = false;
+        new RetrieveData().execute();
     }
 
 
     void SearchContent() throws IOException {
         mangas.clear();
         String search = searchQuery.replaceAll(" ", "+");
-        System.out.println(search);
-        Document doc = Jsoup.connect("https://truyentranh.net/search?q=" + search).userAgent("Mozilla").get();
-        Elements datas = doc.select("div.main-content > div.content > div.box > div.card-list > div.card > a");
-        for (Element data : datas)
+        switch (SourceID.source)
         {
-            Element imgData = data.getElementsByTag("img").get(0);
-            mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
+            case "https://truyentranh.net/":
+            {
+                Document doc = Jsoup.connect("https://truyentranh.net/search?q=" + search).userAgent("Mozilla").get();
+                Elements datas = doc.select("div.main-content > div.content > div.box > div.card-list > div.card > a");
+                for (Element data : datas)
+                {
+                    Element imgData = data.getElementsByTag("img").get(0);
+                    mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
+                }
+                break;
+            }
+            default:
+            {
+                Document doc = Jsoup.connect("https://saytruyen.net/search?s=" + search).userAgent("Mozilla").get();
+                Elements datas = doc.select("div.item-thumb.hover-details.c-image-hover > a");
+                for (Element data : datas)
+                {
+                    Element imgData = data.getElementsByTag("img").get(0);
+                    mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
+                }
+                break;
+            }
         }
-        System.out.println(mangas);
+
     }
 
     void LoadMore() throws IOException {
         page++;
-        Document doc = Jsoup.connect("https://truyentranh.net/comic-latest?page=" + page).userAgent("Mozilla").get();
-        Elements datas = doc.select("div.content > div.box > div.card-list > div.card > a");
-        for (Element data : datas)
+        switch (SourceID.source)
         {
-            Element imgData = data.getElementsByTag("img").get(0);
-            mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
+            case "https://truyentranh.net/":
+            {
+                Document doc = Jsoup.connect("https://truyentranh.net/comic-latest?page=" + page).userAgent("Mozilla").get();
+                Elements datas = doc.select("div.content > div.box > div.card-list > div.card > a");
+                for (Element data : datas)
+                {
+                    Element imgData = data.getElementsByTag("img").get(0);
+                    mangas.add(new MangaData(data.attr("title"),imgData.attr("src"),data.attr("href"),"","",false, null,0));
+                }
+                break;
+            }
+            default:
+            {
+                Document doc = Jsoup.connect("https://saytruyen.net/?page=" + page).userAgent("Mozilla").get();
+                Elements datas = doc.select("div.manga-content > div.row.px-2.list-item > div > div.page-item-detail > div.item-thumb.hover-details.c-image-hover > a");
+                for (Element data : datas) {
+                    Element imgData = data.getElementsByTag("img").get(0);
+                    String imgURL;
+                    if(imgData.attr("data-src").isEmpty())
+                    {
+                        imgURL = imgData.attr("src");
+                    }
+                    else
+                    {
+                        imgURL = imgData.attr("data-src");
+                    }
+                    System.out.println("Image url: " + imgURL);
+                    mangas.add(new MangaData(data.attr("title"), imgURL, data.attr("href"), "", "", false, null, 0));
+                }
+                break;
+            }
         }
+
     }
 
     class RetrieveData extends AsyncTask<Void, Void, Void> {

@@ -44,6 +44,7 @@ public class Content extends AppCompatActivity {
     View back,next;
     MangaData mangaData;
     TextView chapterTxt;
+    String source;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +59,11 @@ public class Content extends AppCompatActivity {
         next = findViewById(R.id.chapter_next);
         contentVP = findViewById(R.id.content_VP);
         contentPB = findViewById(R.id.content_progress);
-
         chapterTxt.setText(mangaChapterList.get(position).getChapterName());
+
+
+        source = mangaChapterList.get(position).getChapterURL().split(".net")[0] + (".net/");
+
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,17 +123,35 @@ public class Content extends AppCompatActivity {
 
 
     void FetchManga() throws IOException {
-        System.out.println("chapters: " + mangaChapterList.toString());
-        System.out.println("position: " + position);
-        Document doc = null;
-            doc = Jsoup.connect(mangaChapterList.get(position).getChapterURL()).userAgent("Mozilla").get();
+        Document doc = Jsoup.connect(mangaChapterList.get(position).getChapterURL()).userAgent("Mozilla").get();
 
-        Elements datas = doc.select("div.page-chapter > img");
-        for (Element data : datas)
+        System.out.println("Source: " + source);
+        switch (source)
         {
-            Element imgData = data.getElementsByTag("img").get(0);
-            contentList.add(imgData.attr("src"));
+            case "https://truyentranh.net/":
+            {
+                Elements datas = doc.select("div.page-chapter > img");
+                for (Element data : datas)
+                {
+                    Element imgData = data.getElementsByTag("img").get(0);
+                    contentList.add(imgData.attr("src"));
+                }
+                System.out.println("Rungning truyentranh");
+                break;
+            }
+            default:
+            {
+                Elements datas = doc.select("div.reading-content > div.page-break > img");
+                for (Element data : datas)
+                {
+                    contentList.add(data.attr("src"));
+                }
+                System.out.println("Running saytruyen");
+                break;
+            }
         }
+
+
 
     }
 

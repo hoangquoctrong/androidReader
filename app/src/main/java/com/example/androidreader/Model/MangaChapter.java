@@ -3,9 +3,9 @@ package com.example.androidreader.Model;
 import java.io.Serializable;
 
 public class MangaChapter implements Serializable,Comparable<MangaChapter> {
-    public String chapterName;
-    public String chapterURL;
-    public int chapterID;
+    private String chapterName;
+    private String chapterURL;
+    private int chapterID;
     MangaChapter(){}
 
     public MangaChapter(String chapterName, String chapterURL, int chapterID) {
@@ -40,6 +40,6 @@ public class MangaChapter implements Serializable,Comparable<MangaChapter> {
 
     @Override
     public int compareTo(MangaChapter mangaChapter) {
-        return this.chapterID - mangaChapter.chapterID ;
+        return mangaChapter.chapterID - this.chapterID ;
     }
 }

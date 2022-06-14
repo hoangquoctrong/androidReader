@@ -3,13 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <ProgressBar
-        android:id="@+id/content_item_progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="visible"/>
     <ImageView
         android:id="@+id/content_IV"
         android:layout_width="match_parent"

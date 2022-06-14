@@ -45,9 +45,8 @@ public class ContentPagerAdapter extends PagerAdapter {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View layout = (ViewGroup) inflater.inflate(R.layout.content_page,container,false);
 
-        ProgressBar progressBar = (ProgressBar) layout.findViewById(R.id.content_item_progress);
         ImageView page_image = (ImageView) layout.findViewById(R.id.content_IV);
-        Glide.with(mContext).load(content.get(position)).placeholder(drawable).into(page_image);
+        Glide.with(mContext).load(content.get(position)).placeholder(drawable).error(R.drawable.ic_baseline_error_24).into(page_image);
 
         container.addView(layout);
         return layout;

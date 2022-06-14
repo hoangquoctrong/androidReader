@@ -62,7 +62,7 @@ public class FavoriteFragment extends Fragment {
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                manga.clear();
+                homeAdapter.notifyDataSetChanged();
             }
         });
 

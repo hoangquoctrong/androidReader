@@ -32,13 +32,13 @@ public class ChapterRecyclerViewAdapter  extends RecyclerView.Adapter<ChapterRec
     private Context mContext;
     private List<MangaChapter> chapters;
     private String mangaURL;
-    MangaData mangaData;
+    private MangaData mangaData;
 
 
-    public ChapterRecyclerViewAdapter(Context mContext, List<MangaChapter> chapters,String URL) {
+    public ChapterRecyclerViewAdapter(Context mContext, List<MangaChapter> chapters, MangaData mangaData) {
         this.mContext = mContext;
         this.chapters = chapters;
-        this.mangaURL = URL;
+        this.mangaData = mangaData;
     }
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -69,19 +69,20 @@ public class ChapterRecyclerViewAdapter  extends RecyclerView.Adapter<ChapterRec
                 try
                 {
                     MangaDAO mangaDAO = new MangaDAO(mContext);
+                    System.out.println("Data before update:" +  mangaData.getLinkURL());
+
                     mangaDAO.checkDatabase();
-                    mangaData = mangaDAO.getData(mangaURL);
                     mangaData.setDate(Calendar.getInstance().getTime());
                     mangaData.setChapterName(chapters.get(position).getChapterName());
                     mangaData.setChapterURL(chapters.get(position).getChapterURL());
                     mangaData.setChapterIndex(position);
                     mangaDAO.EditManga(mangaData);
+                    System.out.println("Data after update:" +  mangaData.getLinkURL());
                     Intent intent = new Intent(mContext, Content.class);
                     intent.putExtra("chapters", (Serializable) chapters);
                     intent.putExtra("position",position);
                     intent.putExtra("data",mangaData);
-                    System.out.println("chapter name: " + chapters.get(position).getChapterName());
-                    System.out.println("chapte url: " + chapters.get(position).getChapterURL());
+
                     mContext.startActivity(intent);
                 }
                 catch (SQLiteException e)
